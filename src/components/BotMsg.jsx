@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { motion } from 'framer-motion'
 import BotAvatar from './BotAvatar'
 import SourceCard from './SourceCard'
@@ -27,6 +28,8 @@ function md(raw) {
 }
 
 export default function BotMsg({ text, sources, streaming, onTranslate }) {
+  const textRef = useRef(null)
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -39,7 +42,7 @@ export default function BotMsg({ text, sources, streaming, onTranslate }) {
         {/* Traduzir para Libras Button */}
         {text && (
           <button
-            onClick={() => onTranslate?.(text)}
+            onClick={() => onTranslate?.(text, textRef.current)}
             className="btn-translate-libras"
             title="Traduzir resposta para LIBRAS"
             disabled={streaming}
@@ -51,6 +54,7 @@ export default function BotMsg({ text, sources, streaming, onTranslate }) {
 
         {/* Texto corrido — sem fundo, sem borda */}
         <div
+          ref={textRef}
           className={`prose-bot${streaming && text ? ' streaming-cursor' : ''}`}
           dangerouslySetInnerHTML={{ __html: md(text) }}
         />

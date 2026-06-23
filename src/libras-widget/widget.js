@@ -213,8 +213,9 @@ export class Widget {
    * Traduz um texto específico para LIBRAS.
    * Abre o painel automaticamente se estiver fechado.
    * @param {string} texto
+   * @param {HTMLElement} [element]
    */
-  translate(texto) {
+  translate(texto, element) {
     if (!this._ready) {
       console.warn('[LibrasWidget] Widget ainda não está pronto. Aguarde o carregamento.');
       return;
@@ -225,7 +226,7 @@ export class Widget {
     openVLibrasPanel();
 
     this._pulse();
-    translate(texto);
+    translate(texto, element);
   }
 
   /**

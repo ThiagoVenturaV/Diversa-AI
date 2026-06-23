@@ -199,7 +199,7 @@ export default function App() {
                 text={m.text}
                 sources={m.sources}
                 streaming={m.streaming}
-                onTranslate={txt => widgetRef.current?.translate(txt)}
+                onTranslate={(txt, el) => widgetRef.current?.translate(txt, el)}
               />
             )
           )}
