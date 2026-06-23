@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const MOCK_ARTICLES = [
   {
@@ -42,6 +42,7 @@ const MOCK_ARTICLES = [
 
 export default function PortalMock({ onOpenChat }) {
   const [searchValue, setSearchValue] = useState('')
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
@@ -130,9 +131,66 @@ export default function PortalMock({ onOpenChat }) {
             >
               Falar com Assistente
             </button>
+
+            {/* Hamburger Button for Mobile */}
+            <button
+              className="btn-hamburger"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label="Abrir Menu"
+            >
+              <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars'}`} />
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="portal-mobile-menu glass-premium"
+          >
+            <nav className="portal-mobile-nav">
+              <a href="#artigos" className="portal-mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                Artigos
+              </a>
+              <a href="#relatos" className="portal-mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                Relatos de Experiência
+              </a>
+              <a href="#materiais" className="portal-mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                Materiais Pedagógicos
+              </a>
+              <a href="#sobre" className="portal-mobile-nav-link" onClick={() => setIsMenuOpen(false)}>
+                Sobre o DIVERSA
+              </a>
+              
+              <div className="portal-mobile-menu-actions">
+                <button
+                  className="btn-accessibility-mobile"
+                  aria-label="Ativar Alto Contraste"
+                >
+                  <i className="fa-solid fa-circle-half-stroke" />
+                  <span>Alto Contraste</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsMenuOpen(false)
+                    onOpenChat('floating', 'Quais são os princípios da educação inclusiva?')
+                  }}
+                  className="btn-chat-cta-mobile"
+                >
+                  Falar com Assistente
+                </button>
+              </div>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
       <section className="hero-section">
