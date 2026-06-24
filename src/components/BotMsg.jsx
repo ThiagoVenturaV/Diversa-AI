@@ -1,30 +1,27 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
+import { marked } from 'marked'
 import BotAvatar from './BotAvatar'
 import SourceCard from './SourceCard'
 
-// ── Markdown mínimo ─────────────────────────────────────────────
+// Configura o marked para abrir todos os links em target="_blank" e com rel="noopener"
+marked.use({
+  renderer: {
+    link({ href, title, text }) {
+      return `<a href="${href}" target="_blank" rel="noopener noreferrer" title="${title || ''}">${text}</a>`;
+    }
+  },
+  gfm: true,
+  breaks: true
+});
+
+// ── Markdown Parser ─────────────────────────────────────────────
 function md(raw) {
   if (!raw) return '';
   // Evita re-escapar HTML já processado (ícones FA em msgs de erro)
   if (raw.startsWith('<i ')) return raw;
   
-  let html = raw
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/\[(.+?)\]\((https?:\/\/[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
-    .replace(/(https?:\/\/[^\s<"]+)/g, '<a href="$&" target="_blank" rel="noopener">$&</a>')
-    .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g, '<ul>$1</ul>')
-    .replace(/\n/g, '<br/>');
-
-  // Remove o <br/> logo após títulos/strong block para evitar espaçamento duplo
-  html = html.replace(/<\/strong><br\s*\/?>/g, '</strong>');
-  // Substitui múltiplos quebras de linha por espaçadores limpos
-  html = html.replace(/(<br\s*\/?>){2,}/g, '<div style="height: 14px"></div>');
-  
-  return html;
+  return marked.parse(raw);
 }
 
 export default function BotMsg({ text, sources, streaming, onTranslate }) {
