@@ -1380,7 +1380,7 @@ textarea:focus-visible {
 }
 
 /* ── VLibras Force Display on Mobile ── */
-[vw], [vw-plugin-wrapper], .vw-plugin-wrapper {
+[vw] {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
