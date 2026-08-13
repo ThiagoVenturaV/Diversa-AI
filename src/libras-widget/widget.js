@@ -9,10 +9,8 @@
 import { translate } from './translator.js';
 import {
   loadVLibras,
-  hideVLibrasNativeButton,
   openVLibrasPanel,
   closeVLibrasPanel,
-  isPanelOpen,
 } from './vlibras-loader.js';
 import { getStyles } from './styles.js';
 

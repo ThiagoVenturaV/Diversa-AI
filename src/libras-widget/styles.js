@@ -11,11 +11,6 @@
  */
 export function getStyles(options = {}) {
   const color = options.color || '#0078d4';
-  const { v, h } = _parsePosition(options.position || 'bottom-right');
-
-  // Offset da tooltip dependendo do lado
-  const tooltipOffset = h === 'right' ? 'right: 16px;' : 'left: 16px;';
-  const tooltipVOffset = v === 'bottom' ? 'bottom: 90px;' : 'top: 90px;';
 
   return `
     :host {
@@ -60,12 +55,4 @@ export function getStyles(options = {}) {
       to { transform: rotate(360deg); }
     }
   `;
-}
-
-function _parsePosition(pos) {
-  const [vert, horiz] = (pos || 'bottom-right').split('-');
-  return {
-    v: ['top', 'bottom'].includes(vert) ? vert : 'bottom',
-    h: ['left', 'right'].includes(horiz) ? horiz : 'right',
-  };
 }
