@@ -127,6 +127,7 @@ export default function InputArea({ value, onChange, onSend, loading }) {
             onKeyDown={onKey}
             placeholder="Pergunte alguma coisa"
             rows={1}
+            maxLength={2000}
             disabled={loading}
             className="chat-textarea"
           />

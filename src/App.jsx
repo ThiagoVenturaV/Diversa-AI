@@ -19,18 +19,16 @@ export default function App() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [profile, setProfile] = useState('familia')
-  const [sessionId, setSessionId] = useState('')
   const chatEl = useRef(null)
   const widgetRef = useRef(null)
   const shouldScrollToBottomRef = useRef(false)
+  const resetSessionRef = useRef(false)
 
   useEffect(() => {
     widgetRef.current = new LibrasWidget({
       color: '#a813f7',
       position: 'bottom-left'
     })
-    // Gera um sessionId único para a conversa no boot
-    setSessionId('sess_' + Math.random().toString(36).substring(2, 11))
     return () => {
       widgetRef.current?.destroy()
     }
@@ -38,9 +36,9 @@ export default function App() {
 
   const handleProfileChange = useCallback((newProfile) => {
     setProfile(newProfile)
-    // Ao trocar de perfil, reinicia a conversa no front e gera um novo sessionId
+    // Ao trocar de perfil, reinicia a conversa no front e no backend.
     setMsgs([])
-    setSessionId('sess_' + Math.random().toString(36).substring(2, 11))
+    resetSessionRef.current = true
   }, [])
 
   const scroll = useCallback(() => {
@@ -88,14 +86,16 @@ export default function App() {
       const apiBase = import.meta.env.VITE_API_URL || ''
       const res = await fetch(`${apiBase}/ask`, {
          method: 'POST',
+         credentials: 'include',
          headers: { 'Content-Type': 'application/json' },
          body: JSON.stringify({ 
            pergunta: q,
            perfil: profile,
-           session_id: sessionId
+           reset_session: resetSessionRef.current
          }),
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      resetSessionRef.current = false
 
       const reader = res.body.getReader()
       const decoder = new TextDecoder()
@@ -139,7 +139,7 @@ export default function App() {
             setMsgs(p => p.map(m => m.id === uBot
               ? {
                 ...m,
-                text: `<i class="fa-solid fa-circle-xmark" style="color:#f75757;margin-right:6px"></i>${obj.message || 'Erro'}`,
+                text: `❌ ${obj.message || 'Não foi possível processar a solicitação.'}`,
                 streaming: false
               }
               : m
@@ -147,11 +147,11 @@ export default function App() {
           }
         }
       }
-    } catch (e) {
+    } catch {
       setMsgs(p => p.map(m => m.id === uBot
         ? {
           ...m,
-          text: `<i class="fa-solid fa-triangle-exclamation" style="color:#f75757;margin-right:6px"></i>Falha na conexão: ${e.message}`,
+          text: '⚠️ Falha na conexão. Tente novamente em instantes.',
           streaming: false
         }
         : m
@@ -160,7 +160,7 @@ export default function App() {
       setLoading(false)
       setMsgs(p => p.map(m => m.id === uBot ? { ...m, streaming: false } : m))
     }
-  }, [input, loading, scroll, profile, sessionId])
+  }, [input, loading, profile])
 
   const handleOpenChat = useCallback((mode, initialQuery) => {
     setIsOpen(true)
