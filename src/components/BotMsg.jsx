@@ -1,28 +1,8 @@
 import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { marked } from 'marked'
 import BotAvatar from './BotAvatar'
 import SourceCard from './SourceCard'
-
-// Configura o marked para abrir todos os links em target="_blank" e com rel="noopener"
-marked.use({
-  renderer: {
-    link({ href, title, text }) {
-      return `<a href="${href}" target="_blank" rel="noopener noreferrer" title="${title || ''}">${text}</a>`;
-    }
-  },
-  gfm: true,
-  breaks: true
-});
-
-// ── Markdown Parser ─────────────────────────────────────────────
-function md(raw) {
-  if (!raw) return '';
-  // Evita re-escapar HTML já processado (ícones FA em msgs de erro)
-  if (raw.startsWith('<i ')) return raw;
-  
-  return marked.parse(raw);
-}
+import { sanitizeMarkdown } from '../markdown'
 
 export default function BotMsg({ text, sources, streaming, onTranslate }) {
   const textRef = useRef(null)
@@ -53,7 +33,7 @@ export default function BotMsg({ text, sources, streaming, onTranslate }) {
         <div
           ref={textRef}
           className={`prose-bot${streaming && text ? ' streaming-cursor' : ''}`}
-          dangerouslySetInnerHTML={{ __html: md(text) }}
+          dangerouslySetInnerHTML={{ __html: sanitizeMarkdown(text) }}
         />
 
         {/* Sources */}

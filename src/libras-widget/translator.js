@@ -65,7 +65,9 @@ export function translate(texto, element) {
   setTimeout(() => {
     try {
       window.getSelection().removeAllRanges();
-    } catch (e) {}
+    } catch {
+      // The browser may clear the selection before this timer runs.
+    }
     if (!element) {
       _cleanup();
     }
